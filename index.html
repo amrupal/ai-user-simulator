@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Behavior Simulator - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-gray-900">🧪 User Behavior Simulator</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/personas" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md">Personas</a>
+                    <a href="/simulator" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">New Simulation</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 px-4">
+        <!-- Hero Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Predict User Behavior Before Launch</h2>
+                <p class="text-lg text-gray-600 mb-6">Test your prototypes with AI-powered user personas to identify friction points and improve UX before going live.</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="/simulator" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
+                        <i class="fas fa-play mr-2"></i>Start New Simulation
+                    </a>
+                    <a href="/personas" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 font-medium">
+                        <i class="fas fa-users mr-2"></i>Manage Personas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-flask text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total Simulations</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="total-simulations">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Success Rate</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="success-rate">0%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Active Personas</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="active-personas">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Avg Friction Points</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="avg-friction">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Simulations -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Recent Simulations</h3>
+            </div>
+            <div class="p-6">
+                <div id="simulations-list" class="space-y-4">
+                    <!-- Simulations will be loaded here -->
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-flask text-4xl mb-4"></i>
+                        <p>No simulations yet. <a href="/simulator" class="text-blue-600 hover:underline">Run your first simulation</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load dashboard data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+        });
+
+        async function loadDashboardData() {
+            try {
+                // Load simulations
+                const simulationsResponse = await fetch('/api/simulations');
+                const simulations = await simulationsResponse.json();
+                
+                // Load personas
+                const personasResponse = await fetch('/api/personas');
+                const personas = await personasResponse.json();
+                
+                // Update statistics
+                updateStatistics(simulations, personas);
+                
+                // Display recent simulations
+                displayRecentSimulations(simulations);
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        function updateStatistics(simulations, personas) {
+            document.getElementById('total-simulations').textContent = simulations.length;
+            document.getElementById('active-personas').textContent = personas.length;
+            
+            const successfulSimulations = simulations.filter(s => s.results && s.results.success);
+            const successRate = simulations.length > 0 ? 
+                Math.round((successfulSimulations.length / simulations.length) * 100) : 0;
+            document.getElementById('success-rate').textContent = successRate + '%';
+            
+            // Calculate average friction points
+            const completedSimulations = simulations.filter(s => s.results && s.results.analytics);
+            let avgFriction = 0;
+            if (completedSimulations.length > 0) {
+                const totalFriction = completedSimulations.reduce((sum, sim) => {
+                    const analytics = sim.results.analytics;
+                    return sum + (analytics.confusion_clicks || []).length + (analytics.bounce_points || []).length;
+                }, 0);
+                avgFriction = Math.round(totalFriction / completedSimulations.length);
+            }
+            document.getElementById('avg-friction').textContent = avgFriction;
+        }
+
+        function displayRecentSimulations(simulations) {
+            const container = document.getElementById('simulations-list');
+            
+            if (simulations.length === 0) {
+                return; // Keep the default empty state
+            }
+            
+            // Show most recent 5 simulations
+            const recentSimulations = simulations.slice(0, 5);
+            
+            container.innerHTML = recentSimulations.map(simulation => {
+                const statusColor = simulation.status === 'completed' ? 'green' : 
+                                  simulation.status === 'failed' ? 'red' : 'yellow';
+                const statusIcon = simulation.status === 'completed' ? 'check' : 
+                                 simulation.status === 'failed' ? 'times' : 'clock';
+                
+                const success = simulation.results ? simulation.results.success : false;
+                const successBadge = success ? 
+                    '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Success</span>' :
+                    '<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Failed</span>';
+                
+                return `
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-${statusColor}-500 rounded-full"></div>
+                                    <h4 class="font-medium text-gray-900">${simulation.url}</h4>
+                                    ${simulation.status === 'completed' ? successBadge : ''}
+                                </div>
+                                <div class="mt-2 text-sm text-gray-600">
+                                    <span class="mr-4"><i class="fas fa-user mr-1"></i>${simulation.persona_name || 'Unknown Persona'}</span>
+                                    <span class="mr-4"><i class="fas fa-${statusIcon} mr-1"></i>${simulation.status}</span>
+                                    <span><i class="fas fa-clock mr-1"></i>${new Date(simulation.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500">${simulation.goal}</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${simulation.status === 'completed' ? 
+                                    `<a href="/analytics/${simulation.id}" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                        <i class="fas fa-chart-line mr-1"></i>View Analytics
+                                    </a>` : 
+                                    '<span class="text-gray-400 text-sm">Processing...</span>'
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
