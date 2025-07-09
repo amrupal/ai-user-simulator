@@ -5,7 +5,7 @@ import json
 import uuid
 from datetime import datetime
 import os
-from simulator.behavior_engine import BehaviorSimulator
+from behavior_engine import BehaviorSimulator
 from simulator.analytics import AnalyticsEngine
 from models.persona import PersonaManager
 from models.simulation import SimulationManager
