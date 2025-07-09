@@ -6,9 +6,9 @@ import uuid
 from datetime import datetime
 import os
 from behavior_engine import BehaviorSimulator
-from simulator.analytics import AnalyticsEngine
-from models.persona import PersonaManager
-from models.simulation import SimulationManager
+from analytics import AnalyticsEngine
+from persona import PersonaManager
+from simulation import SimulationManager
 
 app = Flask(__name__)
 app.secret_key = 'user_behavior_simulator_secret_key'
