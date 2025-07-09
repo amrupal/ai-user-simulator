@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, ElementNotInteractableException
 from webdriver_manager.chrome import ChromeDriverManager
-from models.persona import PersonaManager
+from persona import PersonaManager
 import json
 
 class BehaviorSimulator:
