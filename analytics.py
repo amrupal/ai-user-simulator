@@ -1,7 +1,7 @@
 import json
 import numpy as np
-from models.simulation import SimulationManager
-from models.persona import PersonaManager
+from simulation import SimulationManager
+from persona import PersonaManager
 
 class AnalyticsEngine:
     def __init__(self):
